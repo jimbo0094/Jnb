@@ -13,61 +13,40 @@
   <p>Redirecting to your preferred music app…</p>
 
   <script>
-    (function() {
-      // List your deep-link URLs in order of priority:
-      const deepLinks = [
-        'spotify://track/6owYtfI3RCgVOOpuQioXLs',
-        'tidal://track/YOUR_TRACK_ID',
-        'itmss://itunes.apple.com/us/album/1811316288?i=1811316289',
-        'vnd.youtube://cWzdnsIBUgs'
-      ];
+  (function() {
+    const deepLinks = [
+      // 1) Universal HTTPS link → opens Spotify app if installed
+      'https://open.spotify.com/track/YOUR_TRACK_ID',
+      // 2) If that somehow fails, try the custom URI schemes
+      'itmss://itunes.apple.com/us/album/YOUR_ALBUM_ID?i=YOUR_TRACK_ID',
+      'tidal://track/YOUR_TRACK_ID',
+      'vnd.youtube://YOUR_TRACK_ID'
+    ];
+    const fallback = 'https://stream.jnbmusic.se/Dont-Come-Back';
+    const delay = 1200;  // ms to wait before next attempt
+    let tried = 0;
+    let hidden = false;
 
-      let hasHidden = false;
-      const timeout = 1500; // ms before next attempt
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) hidden = true;
+    });
 
-      // If the page loses visibility (browser switches to app), we assume success.
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          hasHidden = true;
-        }
-      });
-
-      // Try each link in sequence until one “sticks”
-      function tryLink(i) {
-        if (i >= deepLinks.length) {
-          return showFallback();
-        }
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = deepLinks[i];
-        document.body.appendChild(iframe);
-
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          if (hasHidden) {
-            // user was taken to app; we’re done
-            return;
-          } else {
-            // try next link
-            tryLink(i + 1);
-          }
-        }, timeout);
+    function attempt() {
+      if (hidden) return;            // user left the page → success!
+      if (tried >= deepLinks.length) {
+        // nothing opened → final fallback
+        window.location = fallback;
+        return;
       }
+      // jump to the next link
+      window.location = deepLinks[tried++];
+      // if page is still visible after `delay`, try again
+      setTimeout(attempt, delay);
+    }
 
-      function showFallback() {
-        // Redirect to fallback URL if no app was opened
-        window.location.href = 'https://stream.jnbmusic.se/Dont-Come-Back';
-      }
-
-      // Start attempting deep-links
-      tryLink(0);
-
-      // Backup redirect if everything else fails
-      setTimeout(() => {
-        if (!hasHidden) showFallback();
-      }, deepLinks.length * timeout + 500);
-    })();
+    // start the sequence
+    attempt();
+  })();
   </script>
-
 </body>
 </html>
