@@ -12,15 +12,16 @@
   <h1>J&B – Don't Come Back</h1>
   <p>Redirecting to your preferred music app…</p>
 
+
   <script>
   (function() {
     const deepLinks = [
       // 1) Universal HTTPS link → opens Spotify app if installed
-      'https://open.spotify.com/track/YOUR_TRACK_ID',
+      'https://open.spotify.com/track/6owYtfI3RCgVOOpuQioXLs',
       // 2) If that somehow fails, try the custom URI schemes
-      'itmss://itunes.apple.com/us/album/YOUR_ALBUM_ID?i=YOUR_TRACK_ID',
+      'itmss://itunes.apple.com/us/album/1811316288?i=1811316289',
       'tidal://track/YOUR_TRACK_ID',
-      'vnd.youtube://YOUR_TRACK_ID'
+      'vnd.youtube://cWzdnsIBUgs'
     ];
     const fallback = 'https://stream.jnbmusic.se/Dont-Come-Back';
     const delay = 1200;  // ms to wait before next attempt
