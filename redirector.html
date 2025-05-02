@@ -1,53 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Listen Now</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; }
-  </style>
-</head>
 <body>
-
-  <h1>J&B – Don't Come Back</h1>
-  <p>Redirecting to your preferred music app…</p>
-
+  <h1>Your Artist – New Single</h1>
+  <button id="playBtn" style="font-size:1.2rem;padding:1rem;">
+    ▶ Listen Now
+  </button>
 
   <script>
-  (function() {
-    const deepLinks = [
-      // 1) Universal HTTPS link → opens Spotify app if installed
-      'https://open.spotify.com/track/6owYtfI3RCgVOOpuQioXLs',
-      // 2) If that somehow fails, try the custom URI schemes
-      'itmss://itunes.apple.com/us/album/1811316288?i=1811316289',
-      'tidal://track/YOUR_TRACK_ID',
-      'vnd.youtube://cWzdnsIBUgs'
-    ];
-    const fallback = 'https://stream.jnbmusic.se/Dont-Come-Back';
-    const delay = 1200;  // ms to wait before next attempt
-    let tried = 0;
-    let hidden = false;
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) hidden = true;
+    document.getElementById('playBtn').addEventListener('click', () => {
+      // Try the universal link first
+      window.location = 'https://open.spotify.com/track/YOUR_TRACK_ID';
+      // After 1s, fallback to landing if app didn’t open
+      setTimeout(() => {
+        window.location = 'https://stream.jnbmusic.se/Dont-Come-Back';
+      }, 1000);
     });
-
-    function attempt() {
-      if (hidden) return;            // user left the page → success!
-      if (tried >= deepLinks.length) {
-        // nothing opened → final fallback
-        window.location = fallback;
-        return;
-      }
-      // jump to the next link
-      window.location = deepLinks[tried++];
-      // if page is still visible after `delay`, try again
-      setTimeout(attempt, delay);
-    }
-
-    // start the sequence
-    attempt();
-  })();
   </script>
 </body>
-</html>
